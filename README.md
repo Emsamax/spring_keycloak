@@ -1,7 +1,7 @@
 REFAIRE LE PROJECT, 
 REFAIRE LA SECURITY CONFIG SELON LES COMMENTAIRES 
 REMETTRE LES BONS URI DANS PROPERTIES 
-
+=============================== [ FAIT ] ===============================
 @Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		//oauthserver
@@ -17,12 +17,22 @@ spring.security.oauth2.client.registration.keycloak.client-id=
 spring.security.oauth2.client.registration.keycloak.client-secret=
 spring.security.oauth2.client.registration.keycloak.scope=openid, profile, email
 
+-> CODE PLUS PROPRE -> UTILISER VAR LAMBDAS ET :: SI POSSIBLE ET API STREAM
 
-A FAIRE EN PLUS POUR TERMINER
--> PAS DE CONSTANTES POUR LES ROLES JUSTE METTRE hasrole('adm')
--> PAS D'END POINT PUBLIQUE CONNEXION OBLIGATOIRE  
--> CODE PLUS PROPRE -> UTILISER VAR LAMBDAS ET :: SI POSSIBLE ET API STREAM 
--> LIMITER LA VISIBILITE DES ELEMENTS EN FONCTION DES ROLES ET/OU DES PERMISSIONS -> EX ADMIN AVEC PERMISSION WRITE
 -> /!\ NE RIEN ECRIRE EN DUR DANS LE CODE? SOIT CONSTANTE OU VARIABLES DANS FICIERS DE CONFIGURATION
 
+-> PAS D'END POINT PUBLIQUE CONNEXION OBLIGATOIRE
+
+=========================================================================
+
+=============================== [A FAIRE ] ===============================
+
+-> MAPPER KEYCLOAK POUR REALM ROLES 
+
+-> PAS DE CONSTANTES POUR LES ROLES JUSTE METTRE hasrole('adm')
+
+-> LIMITER LA VISIBILITE DES ELEMENTS EN FONCTION DES ROLES ET/OU DES PERMISSIONS -> EX ADMIN AVEC PERMISSION WRITE
+
 NOTES -> COMMENTAIRES EN ANGLAIS ET NOM DE VARIABLES PLUS PROPRES 
+
+==========================================================================
