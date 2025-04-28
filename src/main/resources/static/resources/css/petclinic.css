@@ -9517,4 +9517,26 @@ strong {
     margin-top: 10px;
     margin-bottom: 30px; } }
 
+.user-info .card {
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.user-info table th {
+    width: 150px;
+    background-color: #f8f9fa;
+}
+
+.claims-container {
+    background-color: #f8f9fa;
+    padding: 10px;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 0.9em;
+}
+
+.user-info ul {
+    margin-bottom: 0;
+}
+
 /*# sourceMappingURL=../../../../../../target/petclinic.css.map */

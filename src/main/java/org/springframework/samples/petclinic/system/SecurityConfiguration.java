@@ -28,15 +28,17 @@ public class SecurityConfiguration {
 
 
 	private static final String[] INTERNAL_RESOURCES = {
-		"/leaflet/**", "/css/**", "/fonts/**", "/images/**", "/static/**",
-		"/", "/login", "/oauth2/**", "/webjars/**"
+		"/leaflet/**", "/css/**", "/fonts/**", "/images/**", "/static/**", "/login", "/oauth2/**", "/webjars/**"
 	};
+
+	private static final String[] RESTRICTED_RESOURCES  = {"/owners/*"};
 
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http
 			.authorizeHttpRequests(authorize -> authorize
 				.requestMatchers(INTERNAL_RESOURCES).permitAll()
+				.requestMatchers(RESTRICTED_RESOURCES).hasAuthority("adm")
 				.anyRequest().authenticated()
 			)
 			.oauth2Login(oauth2 -> oauth2
@@ -45,7 +47,7 @@ public class SecurityConfiguration {
 			)
 			.logout(logout -> logout
 				.logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler()) // Optionnel, peut rediriger sans vue
-				.logoutSuccessUrl("/") // Ou redirection vers page d'accueil
+				.logoutSuccessUrl("/login") // Ou redirection vers page d'accueil
 				.invalidateHttpSession(true)
 				.clearAuthentication(true)
 				.deleteCookies("JSESSIONID")
@@ -58,18 +60,21 @@ public class SecurityConfiguration {
 	public OAuth2UserService<OidcUserRequest, OidcUser> oidcUserService() {
 		return userRequest -> {
 			var user = new OidcUserService().loadUser(userRequest);
-			System.out.println("=================== ID Token =================== : " + user.getIdToken().getClaims());
-			System.out.println("=================== User Info =================== : " + user.getUserInfo().getClaims());
 			var claims = user.getClaims();
 			if (!claims.isEmpty()) {
-				var realmRoles = claims.get(REALM_ACCESS);
-				if (realmRoles instanceof Collection<?> && !((Collection<?>) realmRoles).isEmpty()) {
-					var authorities = ((Collection<?>) realmRoles).stream()
-						.map(role -> new SimpleGrantedAuthority((String) role))
-						.collect(Collectors.toList());
-					return new DefaultOidcUser(authorities, user.getIdToken(), user.getUserInfo());
+				var realmAccess = (Map<String, Object>) claims.get(REALM_ACCESS);
+				if (realmAccess != null && realmAccess.containsKey("roles")) {
+					var realmRoles = realmAccess.get("roles");
+					if (realmRoles instanceof Collection<?> && !((Collection<?>) realmRoles).isEmpty()) {
+						var authorities = ((Collection<?>) realmRoles).stream()
+							.map(role -> new SimpleGrantedAuthority((String) role))
+							.collect(Collectors.toList());
+						return new DefaultOidcUser(authorities, user.getIdToken(), user.getUserInfo());
+					} else {
+						throw new OAuth2AuthenticationException("No realm_roles found");
+					}
 				} else {
-					throw new OAuth2AuthenticationException("No realm_roles found");
+					throw new OAuth2AuthenticationException("No realm_access found");
 				}
 			} else {
 				throw new OAuth2AuthenticationException("Claims cannot be empty");

@@ -23,13 +23,15 @@ spring.security.oauth2.client.registration.keycloak.scope=openid, profile, email
 
 -> PAS D'END POINT PUBLIQUE CONNEXION OBLIGATOIRE
 
+-> MAPPER KEYCLOAK POUR REALM ROLES
+
+-> METTRE LOGOUT DANS BARRE + REDIRIGER VERS LOGIN KEYCLOAK
+
+-> PAS DE CONSTANTES POUR LES ROLES JUSTE METTRE hasrole('adm')
+
 =========================================================================
 
 =============================== [A FAIRE ] ===============================
-
--> MAPPER KEYCLOAK POUR REALM ROLES 
-
--> PAS DE CONSTANTES POUR LES ROLES JUSTE METTRE hasrole('adm')
 
 -> LIMITER LA VISIBILITE DES ELEMENTS EN FONCTION DES ROLES ET/OU DES PERMISSIONS -> EX ADMIN AVEC PERMISSION WRITE
 
