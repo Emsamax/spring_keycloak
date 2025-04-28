@@ -25,20 +25,18 @@ import java.util.stream.Collectors;
 public class SecurityConfiguration {
 
 	private static final String REALM_ACCESS = "realm_access";
-
-
+	private static final String ROLES = "roles";
+	private static final String[] RESTRICTED_RESOURCES = {"/owners/*"};
+	private static final String AUTHORITY_ADM = "adm";
 	private static final String[] INTERNAL_RESOURCES = {
-		"/leaflet/**", "/css/**", "/fonts/**", "/images/**", "/static/**", "/login", "/oauth2/**", "/webjars/**"
-	};
-
-	private static final String[] RESTRICTED_RESOURCES  = {"/owners/*"};
+		"/leaflet/**", "/css/**", "/fonts/**", "/images/**", "/static/**", "/login", "/oauth2/**", "/webjars/**"};
 
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http
 			.authorizeHttpRequests(authorize -> authorize
 				.requestMatchers(INTERNAL_RESOURCES).permitAll()
-				.requestMatchers(RESTRICTED_RESOURCES).hasAuthority("adm")
+				.requestMatchers(RESTRICTED_RESOURCES).hasAuthority(AUTHORITY_ADM)
 				.anyRequest().authenticated()
 			)
 			.oauth2Login(oauth2 -> oauth2
@@ -63,8 +61,8 @@ public class SecurityConfiguration {
 			var claims = user.getClaims();
 			if (!claims.isEmpty()) {
 				var realmAccess = (Map<String, Object>) claims.get(REALM_ACCESS);
-				if (realmAccess != null && realmAccess.containsKey("roles")) {
-					var realmRoles = realmAccess.get("roles");
+				if (realmAccess != null && realmAccess.containsKey(ROLES)) {
+					var realmRoles = realmAccess.get(ROLES);
 					if (realmRoles instanceof Collection<?> && !((Collection<?>) realmRoles).isEmpty()) {
 						var authorities = ((Collection<?>) realmRoles).stream()
 							.map(role -> new SimpleGrantedAuthority((String) role))
