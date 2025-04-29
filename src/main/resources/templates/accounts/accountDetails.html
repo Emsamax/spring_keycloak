@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: layout (~{::body},'account')}">
+<body>
+<h2 th:text="#{account}">Account Information</h2>
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="card">
+        <div class="card-body">
+          <table class="table table-striped">
+            <tr>
+              <th>Name:</th>
+              <td th:text="${userInfo.preferredUsername}">John Doe</td>
+            </tr>
+            <tr>
+              <th>Email:</th>
+              <td th:text="${userInfo.email}">john@example.com</td>
+            </tr>
+            <tr>
+              <th>Username:</th>
+              <td th:text="${userInfo.preferredUsername}">johndoe</td>
+            </tr>
+            <tr>
+              <th>Roles:</th>
+              <td>
+                <ul class="list-unstyled">
+                  <li th:each="authority : ${userInfo.authorities}"
+                      th:text="${authority.authority}">ROLE_USER</li>
+                </ul>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

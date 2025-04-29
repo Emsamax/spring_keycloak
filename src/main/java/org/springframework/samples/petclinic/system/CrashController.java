@@ -15,8 +15,15 @@
  */
 package org.springframework.samples.petclinic.system;
 
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.web.servlet.ModelAndView;
+import jakarta.servlet.http.HttpServletRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+
+
 
 /**
  * Controller used to showcase what happens when an exception is thrown
@@ -25,13 +32,39 @@ import org.springframework.web.bind.annotation.GetMapping;
  * <p/>
  * Also see how a view that resolves to "error" has been added ("error.html").
  */
-@Controller
+@ControllerAdvice  // Changed from @RestControllerAdvice to @ControllerAdvice
 class CrashController {
 
-	@GetMapping("/oups")
-	public String triggerException() {
-		throw new RuntimeException(
-				"Expected: controller used to showcase what " + "happens when an exception is thrown");
-	}
+    private static final Logger logger = LoggerFactory.getLogger(CrashController.class);
+    public static final String DEFAULT_ERROR_VIEW = "error";
 
+    @ExceptionHandler(AccessDeniedException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ModelAndView handleAccessDenied(HttpServletRequest request, AccessDeniedException ex) {
+        logger.error("Access denied error occurred", ex);
+
+        ModelAndView mav = new ModelAndView();
+        mav.addObject("status", HttpStatus.FORBIDDEN.value());
+        mav.addObject("error", "Access Denied");
+        mav.addObject("message", "Vous n'avez pas les droits nécessaires pour accéder à cette ressource");
+        mav.addObject("url", request.getRequestURL());
+        mav.setViewName(DEFAULT_ERROR_VIEW);
+
+        return mav;
+    }
+
+    @ExceptionHandler(Exception.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ModelAndView handleOtherExceptions(HttpServletRequest request, Exception ex) {
+        logger.error("An exception occurred", ex);
+
+        ModelAndView mav = new ModelAndView();
+        mav.addObject("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+        mav.addObject("error", "Internal Server Error");
+        mav.addObject("message", ex.getMessage());
+        mav.addObject("url", request.getRequestURL());
+        mav.setViewName(DEFAULT_ERROR_VIEW);
+
+        return mav;
+    }
 }
